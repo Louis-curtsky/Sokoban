@@ -7,13 +7,16 @@ body {
     grid-template: auto / repeat(19, 1fr);
     grid-gap: 3px;
     background-color: #9a66a7;
-    width: 500px;
-    height: 500px;
+    width: 60%;
+    height: 40%;
+    margin-left:10%;
     border: 3px solid rgb(97, 7, 7);
-    margin: 0 auto;
-    padding: 10px;
+  
+    padding: 2rem 3rem 2rem;
 /*    display: flex; 
     flex-wrap: wrap; */
   }
   
-
+#msgArea{
+  color: antiquewhite;
+}

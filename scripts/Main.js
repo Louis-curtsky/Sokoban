@@ -14,6 +14,11 @@ function msgInfo(str)
   document.getElementById("msgArea").innerHTML = str;
 }
 
+function score()
+{}
+
+startGame();
+
 //Appending Div 19x16
 function startGame()
 {
@@ -34,7 +39,7 @@ function startGame()
       innerArea.appendChild(divGameArea);
       divGameArea.id = "Y"+colInside+"X"+rowInside;
       divGameArea.className = contentFromMap[colInside][rowInside][0];
-      divGameArea.appendChild(document.createElement("div"));
+//      divGameArea.appendChild(document.createElement("div"));
     }    
   }
   setSkin();
@@ -125,10 +130,6 @@ var userDirection = "";
 var yNowPos = 0;
 var xNowPos = 0;
 
-document.getElementById("sokoBanBody").addEventListener("keypress", function(event)
-{
-  document.getElementById("msgArea").innerHTML="No Arrow Keys detected!!!";
-})
 
 var IsArrowKey = false;   
 document.getElementById("sokoBanBody").addEventListener("keydown", function(event)
@@ -151,6 +152,7 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
   event.preventDefault();
   if (IsArrowKey)
   {
+    msgInfo("Next Move!!!");
   if (gameStart == false)
   {
     xNowPos = 11;
@@ -165,11 +167,12 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
     yNowPos = yNextPos;
     xNowPos = xNextPos;
   }
-  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
+//  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
   const key = event.key;
   // Initail Next Position = current position
 
-  var currentPos=document.getElementById("Y"+yNowPos+"X"+xNowPos);
+  var currentPos = document.getElementsByClassName("P");
+  console.log(currentPos);
   switch (event.key) 
   {
     case "ArrowLeft":
@@ -204,25 +207,61 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
   else
   if (ChangePos==1 || ChangePos==-1)
   {
-//    console.log(currentPos.className);
-      currentPos.className=" ";
-      currentPos.removeChild(currentPos.lastElementChild);
-      var nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
-      nextPos.className="P";
-      buildPlayer(nextPos);
+    currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
+    currentPos.removeChild(currentPos.lastElementChild);
+    currentPos.className=" ";
+    var nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
+    nextPos.className="P";
+    buildPlayer(nextPos);
+   
   } else
-  if (ChangePos==2 || changePos == -2)
+  if (ChangePos==2 && (userDirection == "R" || userDirection == "D"))
   {
-//      console.log(currentPos.className+" "+yNextPos+" "+xNextPos);
-      currentPos.className=" ";
+    if (userDirection=="R")
+    {
+      console.log(userDirection)
+    }
+    else // Is Down
+    {
+      console.log(userDirection)
+    }
+  } else
+  if (ChangePos == -2 && (userDirection == "L" || userDirection == "U"))
+  {
+    if (userDirection == "L")
+    {
+      var nextNextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos));
+      var nextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos+1));
+      currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
+      
+      nextNextPos.className="B";
+      buildBall(nextNextPos);
+      
       currentPos.removeChild(currentPos.lastElementChild);
-      nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
+      currentPos.className=" ";
+      
       nextPos.className="P";
+      nextPos.removeChild(nextPos.lastElementChild);
       buildPlayer(nextPos);
+
+      console.log("Y:"+yNextPos+"X:"+xNextPos);
+      xNextPos=xNextPos-1;
+    } 
+    else // Is left with Up only
+    {
+      console.log(userDirection)
+    }
+    /*
+*/
+
   }
-  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
-  } // End of funcation
-} //END only for ArrowKey
+//  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
+  } // End of ArrowKey
+  else
+  {
+    msgInfo("Non Arrow Key detected");
+  }
+} //END of Funcation
 );
 
   
@@ -249,24 +288,64 @@ function checkCanMove(y, x, nextDir){
   {
     case "W":
       returnNum = 0; //All remain, no movement
-        return returnNum;
-        break;
+      break;
     case "B":
-      checkWallInfront(y, x);
+      returnNum = checkInfront(y, x, nextDir);
       break;
     case " ":
-      returnNum = getMoving(y, x, nextDir );    
-      console.log(returnNum);
-      return returnNum;
+      returnNum = getMoving(nextDir );    
       break;
     default:
-              // will change to 99 to exit game;
-       return 0;
-       break;
+          // will change to 99 to exit game;
+      returnNum = 0;
+          break;
   }
+  return returnNum;
 }
-          
-function getMoving(y, x, nextDir)  
+      
+function checkInfront(y, x, nextDir)
+{
+  let returnNum = 0;
+  if (nextDir == "L")  // Left 
+  {
+    var nextClass=document.querySelector("#Y"+y+"X"+(x-2));
+    returnNum = -2;
+  }
+  else if (nextDir == "U") // Up
+  {
+    var nextClass=document.querySelector("#Y"+(y-2)+"X"+x);
+    returnNum = -2;
+  }
+  else if (nextDir == "R") // Right
+  {
+    var nextClass=document.getElementById("Y"+y+"X"+(x+2));
+    returnNum = 2;
+  }
+  else // Dowon
+  {
+    var nextClass=document.getElementById("Y"+(y+2)+"X"+x);
+    returnNum = 2;
+  }
+  switch(nextClass.className)
+  {
+    case "W":
+      returnNum = 0; //All remain, no movement
+        break;
+    case "B":
+      returnNum = 0; //All remain, no movement
+      break;
+    case " ":
+      break;
+      default:
+        // will change to 99 to exit game;
+        returnNum = 0;
+        break;
+      }
+      console.log("CheckInfront"+returnNum);
+      return returnNum;
+}
+
+function getMoving(nextDir)  
 {
   if (nextDir === "L" || nextDir === "U")
   {
@@ -282,17 +361,5 @@ function getMoving(y, x, nextDir)
           This is to find out P-User position. However this may not neccessary because
   assuming a fix position for user is always begin at Y11X11
 
+*/
 
-  for (let colInside = 0; colInside<16; colInside++)
-    {
-      for (let rowInside = 0; rowInside<19; rowInside++)
-      {
-          if (document.getElementById("Y"+colInside+"X"+rowInside).innerHTML === "P")
-          {
-            console.log("Poition: Y"+colInside+"X"+rowInside);
-            var posIs = "Y"+colInside+"X"+rowInside;
-          }
-      }
-    }
-    console.log(document.getElementById(posIs).innerHTML);
-  */

@@ -92,171 +92,189 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
     else
     {
       var currentPos = document.getElementById("Y"+player.posY+"X"+player.posX);
-      console.log("Else "+currentPos.className+" Y"+player.posY+"X"+player.posX);
     }
 //  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
   const key = event.key;
   // Initail Next Position = current position
     xNowPos=player.posX;
     yNowPos=player.posY;
+    let KDir = "";
+    console.log("Y"+yNowPos+"X"+xNowPos);
   switch (event.key) 
   {
     case "ArrowLeft":
+      KDir = "L";
       ChangePos=checkCanMove(yNowPos, (xNowPos-1), "L");
-      player.posX=player.posX+ChangePos;
       break;
       case "ArrowRight":
-        ChangePos=checkCanMove(yNowPos, (xNowPos+1), "R");
-        xNextPos=xNextPos+ChangePos;
+      KDir = "R";
+      ChangePos=checkCanMove(yNowPos, (xNowPos+1), "R");
     break;
     case "ArrowUp":
+      KDir = "U";
       ChangePos=checkCanMove((yNowPos-1), xNowPos, "U");
-      player.posY=player.posY+ChangePos;
+    break;
+    case "ArrowDown":
+      KDir="D";
+      ChangePos=checkCanMove((yNowPos+1),xNowPos, "D");
       break;
-      case "ArrowDown":
-        ChangePos=checkCanMove((yNowPos+1),xNowPos, "D");
-        yNextPos=yNextPos+ChangePos;
-    break;
-    default:
-    break;
+      default:
+      break;
   }
-  if (ChangePos==1 || ChangePos==-1)
+  movePlayers(ChangePos, KDir);
+}
+else
+{
+  msgInfo("No Arrow Detected!!!");
+} // End of IsArrowKey
+}//END of Funcation
+);
+
+function movePlayers(ChangePos, KDir)
+{
+  let nextNextY = 0;
+  let nextNextX = 0;
+  if (ChangePos==-1 || ChangePos ==1)
   {
-    currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
-    // remove current player
+    if (KDir == "U" || KDir == "D")
+    {
+      player.posY=player.posY+ChangePos;
+    } 
+    else // Left or Right
+    {
+      player.posX=player.posX+ChangePos;
+    }
+//    console.log("ChPos"+ChangePos);
+    var  currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
     currentPos.className=" ";
     var nextPos=document.getElementById("Y"+player.posY+"X"+player.posX);
     //   Move Player
     nextPos.className="P";
-   console.log("DN/Up: Old Y"+yNowPos+"X"+xNowPos);
-   console.log("DN/Up: New Y"+player.posY+"X"+player.posX)
   } else
-  if (ChangePos==2 && (userDirection == "R" || userDirection == "D"))
+  if (ChangePos==2 || ChangePos == -2)
   {
-    if (userDirection=="R")
+    if (KDir == "D")
     {
-      console.log(userDirection)
-    }
-    else // Is Down
-    {
-      console.log(userDirection)
-    }
-  } else
-  if (ChangePos == -2 && (userDirection == "L" || userDirection == "U"))
-  {
-    if (userDirection == "L")
-    {
-      var nextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos+1));
-      var nextNextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos));
-     // currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
-      
-      console.log("NY:"+yNextPos+"NX:"+(xNextPos+1)+nextPos);
-      console.log("NY:"+yNextPos+"NNX:"+xNextPos+nextNextPos);
-      currentPos.removeChild(currentPos.lastElementChild);
-      currentPos.className=" ";
-      nextPos.removeChild(nextPos.lastElementChild);
-      buildPlayer(nextPos);
-      nextPos.className="P";
-      
-      buildBall(nextNextPos);
-      nextNextPos.className="B";
+      nextNextY = player.posY+ChangePos;
+      player.posY=player.posY+1
+      nextNextX = player.posX;
     } 
-    else // Is left with Up only
+    else if (KDir == "R")// Right
     {
-      console.log(userDirection)
+      nextNextX = player.posX+ChangePos;
+      player.posX=player.posX+1
+      nextNextY = player.posY;
     }
-  } // End If (-2)
-  else
-  {
-    msgInfo("Undefine Error!!!");
+    else if (KDir == "U")
+    {
+      nextNextY = player.posY+ChangePos;   
+      player.posY=player.posY-1
+      nextNextX = player.posX;   
+    }
+    else if (KDir == "L")// Left with 2 items
+    {    
+      nextNextX = player.posX+ChangePos;
+      player.posX=player.posX-1;
+      nextNextY = player.posY;
+    } else
+    {
+      msgInfo("Error in Logic!!!");
+    }
+    var currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
+    var nextPos=document.getElementById("Y"+player.posY+"X"+player.posX);
+    var nextNextPos=document.getElementById("Y"+nextNextY+"X"+nextNextX);
+    //   Move Player
+    currentPos.className=" ";
+    nextPos.className="P";    
+    nextNextPos.className="B";
+    console.log("Next: Y"+player.posY+"X"+player.posX);
+    console.log("NextNext: Y"+nextNextY+"X"+nextNextX);
   }
-}
-else
-{
-    msgInfo("No Arrow Detected!!!");
-}
- // End of IsArrowKey
-}//END of Funcation
-);
+} // End of MovePlayer
 
-  
 function checkCanMove(y,x,nextDir){
-  var nextClass=document.getElementById("Y"+(y)+"X"+(x));
-  
+  var nextClass=document.getElementById("Y"+y+"X"+x);
   var returnNum = 0;
   var cName = nextClass.className;  
   console.log("checkCanMove:Y"+y+"X"+x+"Dir:"+nextDir, cName);
-  switch(cName)
+  if (cName=="W")
   {
-    case "W":
-      returnNum = 0; //All remain, no movement
-      break;
-    case "B":
-//      returnNum = checkInfront(y, x, nextDir);
-      break;
-    case " ":
-      returnNum = getMoving(nextDir );    
-      break;
-    default:
-          // will change to 99 to exit game;
-      returnNum = 0;
-          break;
+    returnNum = 0; //All remain, no movement
+  } else 
+  if (cName == "B")
+  {
+    returnNum = checkInfront(y, x, nextDir);
+  } else 
+  if (cName == "G")
+  {
+    console.log("G");
+  } else 
+  {
+    returnNum = getMoving(nextDir );    
   }
   return returnNum;
-}
+} // End of CheckCanMove
       
 function checkInfront(y, x, nextDir)
 {
   let returnNum = 0;
   if (nextDir == "L")  // Left 
   {
-    var nextClass=document.querySelector("#Y"+y+"X"+(x-2));
+    var nextClass=document.getElementById("Y"+y+"X"+(x-1));
     returnNum = -2;
   }
   else if (nextDir == "U") // Up
   {
-    var nextClass=document.querySelector("#Y"+(y-2)+"X"+x);
+    var nextClass=document.getElementById("Y"+(y-1)+"X"+x);
     returnNum = -2;
   }
   else if (nextDir == "R") // Right
   {
-    var nextClass=document.getElementById("Y"+y+"X"+(x+2));
+    var nextClass=document.getElementById("Y"+y+"X"+(x+1));
     returnNum = 2;
   }
-  else // Dowon
+  else // Down
   {
-    var nextClass=document.getElementById("Y"+(y+2)+"X"+x);
+    var nextClass=document.getElementById("Y"+(y+1)+"X"+x);
     returnNum = 2;
   }
+  console.log("CHKIfrn: "+y+(x-2)+nextClass.className);
+  // BB, BW no move
   switch(nextClass.className)
   {
     case "W":
       returnNum = 0; //All remain, no movement
-        break;
+      break;
     case "B":
-      returnNum = 0; //All remain, no movement
+      returnNum = 0; //Can move
       break;
     case " ":
       break;
-      default:
-        // will change to 99 to exit game;
-        returnNum = 0;
-        break;
-      }
-//      console.log("CheckInfront"+returnNum);
-      return returnNum;
+    case "G":
+      break;
+    default:
+            // will change to 99 to exit game;
+      returnNum = 0;
+      break;
+  }
+    //      console.log("CheckInfront"+returnNum);
+  console.log("CheckInfront"+nextClass+" Return:"+returnNum);
+  return returnNum;
 }
 
 function getMoving(nextDir)  
 {
+  let returnMove = 0;
   if (nextDir === "L" || nextDir === "U")
   {
-    return -1;
+    returnMove = -1;
   }
   else if (nextDir === "R"|| nextDir === "D")
   {
-    return 1;
+    returnMove = 1;
   }
+  console.log ("getMoving:"+returnMove);
+  return returnMove;
 }        
 
   /* 

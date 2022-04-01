@@ -40,65 +40,15 @@ function startGame()
     {   
       
       divGameArea = document.createElement("div");
-//      innerArea.appendChild(document.createTextNode(' '));
       innerArea.appendChild(divGameArea);
       divGameArea.id = "Y"+colInside+"X"+rowInside;
       divGameArea.className = contentFromMap[colInside][rowInside][0];
-//      divGameArea.appendChild(document.createElement("div"));
     }    
   }
   gameOver = false;
 }
 // document.addEventListener("keydown", ()=>function keyChks() {});
 
-
-function buildWall(icon)
-{
-  var allWall = icon.appendChild(document.createElement("img"));
-  allWall.setAttribute("src", "/Image/wall.png");
-  allWall.setAttribute("alt","Wall");
-  allWall.setAttribute("display", "flex");
-  allWall.setAttribute("width", "100%");
-  allWall.setAttribute("height", "100%");
-  allWall.setAttribute("float", "left");
-  allWall.setAttribute("top", "0");
-}
-
-function buildPlayer(icon)
-{
-  var allWall = icon.appendChild(document.createElement("img"));
-  allWall.setAttribute("src", "/Image/FishLightGreen.png");
-  allWall.setAttribute("alt","Wall");
-  allWall.setAttribute("display", "flex");
-  allWall.setAttribute("width", "100%");
-  allWall.setAttribute("height", "100%");
-  allWall.setAttribute("float", "left");
-  allWall.setAttribute("top", "0");
-}
-
-function buildTiles(icon)
-{
-  var allWall = icon.appendChild(document.createElement("img"));
-  allWall.setAttribute("src", "/Image/G-Area.svg");
-  allWall.setAttribute("alt","Wall");
-  allWall.setAttribute("display", "flex");
-  allWall.setAttribute("width", "100%");
-  allWall.setAttribute("height", "100%");
-  allWall.setAttribute("float", "left");
-  allWall.setAttribute("top", "0");
-}
-
-function buildBall(icon)
-{
-  var allWall = icon.appendChild(document.createElement("img"));
-  allWall.setAttribute("src", "/Image/2-2-grinning-face-emoji-png.png");
-  allWall.setAttribute("alt","Wall");
-  allWall.setAttribute("display", "flex");
-  allWall.setAttribute("width", "100%");
-  allWall.setAttribute("height", "100%");
-  allWall.setAttribute("float", "left");
-  allWall.setAttribute("top", "0");
-}
 
 var yNextPos = 0;
 var xNextPos = 0;
@@ -125,7 +75,7 @@ document.getElementById("sokoBanBody").addEventListener("keydown", function(even
   }
 })
 
-// BEGINNING OF PLAY
+// BEGINNING OF PLAY when user hit arrow keys
 
 document.getElementById("sokoBanBody").addEventListener("keyup", function(event) 
 {
@@ -134,72 +84,52 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
     event.preventDefault();
     if (gameStart == false)
     {
-      xNowPos = 11;
-      yNowPos = 11;
-      yNextPos = yNowPos;
-      xNextPos = xNowPos;
+      yNextPos = player.posX;
+      xNextPos = player.posY;
       gameStart = true;
       gameOver = false;
     }
     else
     {
-      for (let i=10; i<16; ++i)
-      {
-        for (let j=10; j<19; ++j)
-        {
-          var currentPos = document.getElementById("Y"+i+"X"+j);
-          if (currentPos.className=="P")
-          {
-          yNowPos = i;
-          xNowPos = j;
-          i=16;
-          j=19;
-          console.log(currentPos.className+"Y"+yNowPos+"X"+xNowPos);
-          }
-        }
-      }
+      var currentPos = document.getElementById("Y"+player.posY+"X"+player.posX);
+      console.log("Else "+currentPos.className+" Y"+player.posY+"X"+player.posX);
     }
 //  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
   const key = event.key;
   // Initail Next Position = current position
-
+    xNowPos=player.posX;
+    yNowPos=player.posY;
   switch (event.key) 
   {
     case "ArrowLeft":
-      ChangePos=checkCanMove(yNowPos, xNowPos, "L");
-      xNextPos=xNextPos+ChangePos;
-    break;
-    case "ArrowRight":
-      ChangePos=checkCanMove(yNowPos, xNowPos, "R");
-      xNextPos=xNextPos+ChangePos;
+      ChangePos=checkCanMove(yNowPos, (xNowPos-1), "L");
+      player.posX=player.posX+ChangePos;
+      break;
+      case "ArrowRight":
+        ChangePos=checkCanMove(yNowPos, (xNowPos+1), "R");
+        xNextPos=xNextPos+ChangePos;
     break;
     case "ArrowUp":
-      ChangePos=checkCanMove(yNowPos,xNowPos, "U");
-      yNextPos=yNextPos+ChangePos;
-    break;
-    case "ArrowDown":
-      ChangePos=checkCanMove(yNowPos,xNowPos, "D");
-      yNextPos=yNextPos+ChangePos;
+      ChangePos=checkCanMove((yNowPos-1), xNowPos, "U");
+      player.posY=player.posY+ChangePos;
+      break;
+      case "ArrowDown":
+        ChangePos=checkCanMove((yNowPos+1),xNowPos, "D");
+        yNextPos=yNextPos+ChangePos;
     break;
     default:
     break;
   }
-  console.log("L:X"+xNowPos+"Y"+yNowPos+"C:"+ChangePos);
-  if (ChangePos==0)
-  {
-      xNowPos=xNextPos;
-      yNowPos=yNextPos;
-  }
-  else
   if (ChangePos==1 || ChangePos==-1)
   {
     currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
-    currentPos.removeChild(currentPos.lastElementChild);
+    // remove current player
     currentPos.className=" ";
-    var nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
+    var nextPos=document.getElementById("Y"+player.posY+"X"+player.posX);
+    //   Move Player
     nextPos.className="P";
-    buildPlayer(nextPos);
-   
+   console.log("DN/Up: Old Y"+yNowPos+"X"+xNowPos);
+   console.log("DN/Up: New Y"+player.posY+"X"+player.posX)
   } else
   if (ChangePos==2 && (userDirection == "R" || userDirection == "D"))
   {
@@ -250,18 +180,19 @@ else
 );
 
   
-function checkCanMove(y, x, nextDir){
-    var nextClass=document.getElementsByClassName("P");
+function checkCanMove(y,x,nextDir){
+  var nextClass=document.getElementById("Y"+(y)+"X"+(x));
+  
   var returnNum = 0;
-  var cName = nextClass.className;
-  console.log(cName);
-  switch(nextClass.className)
+  var cName = nextClass.className;  
+  console.log("checkCanMove:Y"+y+"X"+x+"Dir:"+nextDir, cName);
+  switch(cName)
   {
     case "W":
       returnNum = 0; //All remain, no movement
       break;
     case "B":
-      returnNum = checkInfront(y, x, nextDir);
+//      returnNum = checkInfront(y, x, nextDir);
       break;
     case " ":
       returnNum = getMoving(nextDir );    

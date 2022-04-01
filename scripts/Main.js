@@ -5,9 +5,14 @@
 var divGameArea = document.createElement("div");
 var contentFromMap = tileMap01.mapGrid;
 var innerArea = document.getElementById("myGame");
-const str = "";
 var gameStart = false;
 var gameOver = true;
+
+const str = "";
+const player = {
+  posY: 11,
+  posX: 11
+}
 
 function msgInfo(str)
 {
@@ -35,45 +40,17 @@ function startGame()
     {   
       
       divGameArea = document.createElement("div");
-      innerArea.appendChild(document.createTextNode(' '));
+//      innerArea.appendChild(document.createTextNode(' '));
       innerArea.appendChild(divGameArea);
       divGameArea.id = "Y"+colInside+"X"+rowInside;
       divGameArea.className = contentFromMap[colInside][rowInside][0];
 //      divGameArea.appendChild(document.createElement("div"));
     }    
   }
-  setSkin();
   gameOver = false;
 }
 // document.addEventListener("keydown", ()=>function keyChks() {});
 
-function setSkin()
-{
-  for (let colInside = 0; colInside<16; colInside++)
-  {
-    for (let rowInside = 0; rowInside<19; rowInside++)
-    {  
-      const icon=document.getElementById("Y"+colInside+"X"+rowInside);
-      //    console.log(icon.className);
-      if (icon.className=="W")
-      {
-        buildWall(icon);
-      }
-      else if (icon.className=="P")
-      {
-        buildPlayer(icon);
-      }
-      else if (icon.className=="B")
-      {
-        buildBall(icon);
-      } 
-      else if (icon.className=="G")
-      {
-        buildTiles(icon);
-      }
-    }
-  }
-}
 
 function buildWall(icon)
 {
@@ -130,8 +107,8 @@ var userDirection = "";
 var yNowPos = 0;
 var xNowPos = 0;
 
+var IsArrowKey = false;
 
-var IsArrowKey = false;   
 document.getElementById("sokoBanBody").addEventListener("keydown", function(event)
 {
   event.preventDefault();
@@ -147,58 +124,67 @@ document.getElementById("sokoBanBody").addEventListener("keydown", function(even
       break;
   }
 })
+
+// BEGINNING OF PLAY
+
 document.getElementById("sokoBanBody").addEventListener("keyup", function(event) 
 {
-  event.preventDefault();
   if (IsArrowKey)
   {
-    msgInfo("Next Move!!!");
-  if (gameStart == false)
-  {
-    xNowPos = 11;
-    yNowPos = 11;
-    yNextPos = yNowPos;
-    xNextPos = xNowPos;
-    gameStart = true;
-    gameOver = false;
-  }
-  else
-  {
-    yNowPos = yNextPos;
-    xNowPos = xNextPos;
-  }
+    event.preventDefault();
+    if (gameStart == false)
+    {
+      xNowPos = 11;
+      yNowPos = 11;
+      yNextPos = yNowPos;
+      xNextPos = xNowPos;
+      gameStart = true;
+      gameOver = false;
+    }
+    else
+    {
+      for (let i=10; i<16; ++i)
+      {
+        for (let j=10; j<19; ++j)
+        {
+          var currentPos = document.getElementById("Y"+i+"X"+j);
+          if (currentPos.className=="P")
+          {
+          yNowPos = i;
+          xNowPos = j;
+          i=16;
+          j=19;
+          console.log(currentPos.className+"Y"+yNowPos+"X"+xNowPos);
+          }
+        }
+      }
+    }
 //  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
   const key = event.key;
   // Initail Next Position = current position
 
-  var currentPos = document.getElementsByClassName("P");
-  console.log(currentPos);
   switch (event.key) 
   {
     case "ArrowLeft":
-      userDirection = "L";
-      ChangePos=checkCanMove(yNowPos, xNowPos, userDirection);
+      ChangePos=checkCanMove(yNowPos, xNowPos, "L");
       xNextPos=xNextPos+ChangePos;
     break;
     case "ArrowRight":
-      userDirection = "R";
-      ChangePos=checkCanMove(yNowPos, xNowPos, userDirection);
+      ChangePos=checkCanMove(yNowPos, xNowPos, "R");
       xNextPos=xNextPos+ChangePos;
     break;
     case "ArrowUp":
-      userDirection = "U";
-      ChangePos=checkCanMove(yNowPos,xNowPos, userDirection);
+      ChangePos=checkCanMove(yNowPos,xNowPos, "U");
       yNextPos=yNextPos+ChangePos;
     break;
     case "ArrowDown":
-      userDirection = "D";
-      ChangePos=checkCanMove(yNowPos,xNowPos, userDirection);
+      ChangePos=checkCanMove(yNowPos,xNowPos, "D");
       yNextPos=yNextPos+ChangePos;
     break;
     default:
     break;
   }
-    gameStart = true;
+  console.log("L:X"+xNowPos+"Y"+yNowPos+"C:"+ChangePos);
   if (ChangePos==0)
   {
       xNowPos=xNextPos;
@@ -230,60 +216,45 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
   {
     if (userDirection == "L")
     {
-      var nextNextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos));
       var nextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos+1));
-      currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
+      var nextNextPos=document.getElementById("Y"+yNextPos+"X"+(xNextPos));
+     // currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
       
-      nextNextPos.className="B";
-      buildBall(nextNextPos);
-      
+      console.log("NY:"+yNextPos+"NX:"+(xNextPos+1)+nextPos);
+      console.log("NY:"+yNextPos+"NNX:"+xNextPos+nextNextPos);
       currentPos.removeChild(currentPos.lastElementChild);
       currentPos.className=" ";
-      
-      nextPos.className="P";
       nextPos.removeChild(nextPos.lastElementChild);
       buildPlayer(nextPos);
-
-      console.log("Y:"+yNextPos+"X:"+xNextPos);
-      xNextPos=xNextPos-1;
+      nextPos.className="P";
+      
+      buildBall(nextNextPos);
+      nextNextPos.className="B";
     } 
     else // Is left with Up only
     {
       console.log(userDirection)
     }
-    /*
-*/
-
-  }
-//  console.log("Now:"+xNowPos+yNowPos+"Next:"+xNextPos+yNextPos);  
-  } // End of ArrowKey
+  } // End If (-2)
   else
   {
-    msgInfo("Non Arrow Key detected");
+    msgInfo("Undefine Error!!!");
   }
-} //END of Funcation
+}
+else
+{
+    msgInfo("No Arrow Detected!!!");
+}
+ // End of IsArrowKey
+}//END of Funcation
 );
 
   
 function checkCanMove(y, x, nextDir){
-  if (nextDir == "L")  // Left 
-  {
-    var nextClass=document.querySelector("#Y"+y+"X"+(x-1));
-  }
-  else if (nextDir == "U") // Up
-  {
-    var nextClass=document.querySelector("#Y"+(y-1)+"X"+x);
-  }
-  else if (nextDir == "R") // Right
-  {
-    var nextClass=document.getElementById("Y"+y+"X"+(x+1));
-
-  }
-  else // Dowon
-  {
-    var nextClass=document.getElementById("Y"+(y+1)+"X"+x);
-  }
-  let returnNum = 0;
+    var nextClass=document.getElementsByClassName("P");
+  var returnNum = 0;
+  var cName = nextClass.className;
+  console.log(cName);
   switch(nextClass.className)
   {
     case "W":
@@ -341,7 +312,7 @@ function checkInfront(y, x, nextDir)
         returnNum = 0;
         break;
       }
-      console.log("CheckInfront"+returnNum);
+//      console.log("CheckInfront"+returnNum);
       return returnNum;
 }
 

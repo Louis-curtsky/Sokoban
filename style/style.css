@@ -4,22 +4,43 @@ body {
     width: 100vw;
   }
   
-  .gameArea {
+.gameArea {
     display:grid;
+    background-color: #9a66a7;
     grid-template: auto / repeat(19, 1fr);
     grid-gap: 3px;
-    background-color: #9a66a7;
-    width: 700px;
+    width: 570px;
     height: 500px;
     margin-left:10%;
     top: 0px;
-    border: 3px solid rgb(97, 7, 7);
-  
+    border: 3px solid rgb(97, 7, 7);  
     padding: 2rem 3rem 2rem;
-/*    display: flex; 
-    flex-wrap: wrap; */
   }
-  
+
+.P
+{
+  background-image: url("/Image/FishLightGreen.png");
+  background-size: contain;
+}
+
+.W
+{
+  background-image: url("/Image/wall.png");
+  background-size: contain;
+} 
+
+.G
+{
+  background-image: url("/Image/G-Area.svg");
+  background-size: contain;
+}
+
+.B
+{
+  background-image: url("/Image/2-2-grinning-face-emoji-png.png");
+  background-size: contain;
+}
+
 #msgArea{
   color: antiquewhite;
 }

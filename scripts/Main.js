@@ -48,20 +48,6 @@ function startGame()
       innerArea.appendChild(divGameArea);
       divGameArea.id = "Y"+colInside+"X"+rowInside;
       divGameArea.className = contentFromMap[colInside][rowInside][0];
-/*      if (divGameArea.className == "G")
-      {
-        if (gColS == 0 && beginGR == false)
-        {
-          gColS = colInside;
-          gRowS = rowInside;
-          beginGR = true;
-        }
-        else
-        {
-          gRowE = rowInside;
-          gColE = colInside;
-        }
-      } */
     }    
   } 
   gameOver = false;
@@ -213,32 +199,32 @@ function movePlayers(ChangeBigContain, KDir)
     var nextNextPos=document.getElementById("Y"+nextNextY+"X"+nextNextX);
     //   Move Player
     // PBGG->PBG
-    console.log("NXTNXTCL: "+nextNextPos.classList+" NXT: "+nextPos.classList);
-    if (nextNextPos.className=="G" && nextPos.className=="B" && KDir == "R")
+    if (nextNextPos.className=="G" && nextPos.className=="B")
     {
       currentPos.className=" ";
       nextPos.className="P";    
       nextNextPos.className="B G";      
       console.log("Loop 1"+nextNextPos.className);
-    } else // PBG->PBW
-    if(nextNextPos.className=="G" && nextPos.classList=="B G" && KDir == "R")
+    } 
+    else if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "R")
     {
-      console.log("Loop 2");
-      currentPos.className = " ";
+      currentPos.className=" ";
       nextPos.className="P G";
-      nextNextPos.className="B G"
-    }
-    else // PBGB->PBB
-    if (nextNextPos.className == "B G" && nextPos.className == "B G" && KDir == "R")
+      nextNextPos.className="B G";
+      console.log("Loop 2"+nextNextPos.className);
+    } else if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "U")
     {
-      console.log("Loop 3");      
-    }
-    else // P" "B(G)<-PBB(GG)
-    if (nextNextPos.className == "B G" && nextPos.classList=="B G" && KDir == "L")
+      currentPos.className="G";
+      nextPos.className="P G";
+      nextNextPos.className="B G";
+      console.log("Loop 2"+nextNextPos.className);
+    } else
+    if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "D") 
     {
-      nextPos.className = "P";
-      currentPos.className =" ";
-      console.log("Loop 4");
+      currentPos.className="G";
+      nextPos.className="P G";
+      nextNextPos.className="B G";
+      console.log("Loop 2"+nextNextPos.className);
     }
     else
     {
@@ -279,6 +265,7 @@ function checkCanMove(y,x,nextDir){
 function checkInfront(y, x, nextDir)
 {
   let returnNum = 0;
+  var currentPos=document.getElementById("Y"+y+"X"+x);
   if (nextDir == "L")  // Left 
   {
     var nextClass=document.getElementById("Y"+y+"X"+(x-1));
@@ -299,12 +286,27 @@ function checkInfront(y, x, nextDir)
     var nextClass=document.getElementById("Y"+(y+1)+"X"+x);
     returnNum = 2;
   }
+  
   // BB, BW no move
-  if (nextClass.className == "W")
+  if (nextClass.className == "W" || 
+  (currentPos.className == "B G" && nextClass.className == "W"))
   {
-      returnNum = 0; //All remain, no movement
-  }
-  console.log("CheckInfront"+nextClass.className+" Return:"+returnNum);
+    returnNum = 0; //All remain, no movement
+  } else 
+  if (currentPos.className == "B" && nextClass.className == "B")
+  {
+    returnNum = 0; //All remain, no movement
+  } else 
+  if (currentPos.className == "B G" && nextClass.className == "B G")
+  {
+    returnNum = 0; //All remain, no movement
+  } else 
+  if (currentPos.className == "B" && nextClass.className == "B G")
+  {
+    returnNum = 0; //All remain, no movement
+  } 
+  console.log("Current:"+currentPos.className);
+  console.log("Y"+y+"X"+x+"Next:"+nextClass.className); 
   return returnNum;
 }
 
@@ -321,18 +323,6 @@ function getMoving(nextDir)
   }
   return returnMove;
 }  
-
-function drawGoalArea (gColS, gRowS, gColE, gRowE)
-{
-  for (let i=0; i<gColS; i++)
-  {
-    for (let j=0; j<gRowS; j++)
-    {
-      var  gPosition = document.getElementById("Y"+i+"X"+j);
-      gPosition.className = "G";
-    }
-  }
-}
 
   /* 
           This is to find out P-User position. However this may not neccessary because

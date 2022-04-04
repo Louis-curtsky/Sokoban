@@ -217,14 +217,14 @@ function movePlayers(ChangeBigContain, KDir)
       currentPos.className="G";
       nextPos.className="P G";
       nextNextPos.className="B G";
-      console.log("Loop 2"+nextNextPos.className);
+      console.log("Loop 3"+nextNextPos.className);
     } else
     if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "D") 
     {
       currentPos.className="G";
       nextPos.className="P G";
       nextNextPos.className="B G";
-      console.log("Loop 2"+nextNextPos.className);
+      console.log("Loop 4"+nextNextPos.className);
     }
     else
     {

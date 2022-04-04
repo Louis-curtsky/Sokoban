@@ -86,14 +86,17 @@ document.getElementById("sokoBanBody").addEventListener("keyup", function(event)
     event.preventDefault();
     if (gameStart == false)
     {
+      msgInfo(" ");
       yNextPos = player.posX;
       xNextPos = player.posY;
       gameStart = true;
       gameOver = false;
+      var IsArrowKey = true;
     }
     else
     {
       var currentPos = document.getElementById("Y"+player.posY+"X"+player.posX);
+      var IsArrowKey = false;
     }
   const key = event.key;
   // Initail Next Position = current position

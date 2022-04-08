@@ -7,12 +7,29 @@
     <link rel="stylesheet" href="/style/style.css" />
   </head>
   <body id="sokoBanBody">
-    <header>Sokoban</header>
-    <hr>
+    <header>
+      <h2>Sokoban</h2><div id="timerDisplay">
+        <div>Hour: <span id="hour"></span></div>
+        <div>Minute: <span id="minute"></span></div>
+        <div>Second: <span id="seconds"></span></div>
+      </div>
+      <h3 id="msgArea"></h3>
+    </header>
+
     <div id = "myGame" class="gameArea">    </div>
     <hr>
-    <h2 id="msgArea"></h2>
-    <button onclick="score()">Score</button>
+<div class="btnLine">
+  <div class="stop-btn">
+    <button id="stop-btn">Stop</button>
+  </div>
+  <form>
+    <select id="dropbtn">
+      <option value=""> </option>
+      <option value="map1">Map 1</option>
+      <option value="map2">Map 2</option>
+    </select>
+  </form>
+
     <script src="/scripts/SokobanBase.js"></script>
     <script src="/scripts/Main.js"></script>   
   </body>

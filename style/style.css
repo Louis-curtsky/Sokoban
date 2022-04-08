@@ -19,14 +19,14 @@ body {
 
 .P
 {
-  background-image: url("/Image/FishLightGreen.png");
+  background-image: url("/img/FishLightGreen.png");
   background-size: contain;
   
 }
 
 .W
 {
-  background-image: url("/Image/wall.png");
+  background-image: url("/img/wall.png");
   background-size: contain;
 } 
 
@@ -38,12 +38,53 @@ body {
 
 .B
 {
-  background-image: url("/Image/2-2-grinning-face-emoji-png.png");
+  background-image: url("/img/2-2-grinning-face-emoji-png.png");
   background-size: contain;
 }
 
 #msgArea{
   color: antiquewhite;
+  margin-top: 3vh;
+  margin-left: 15rem;;
+}
+
+.btnLine{
+  display: flex;
+  margin-left: 10%;
+}
+#stop-btn{
+  display: flex;
+  background-color:gold;
+  color:darkslategray;
+  padding: 12px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+#stop-btn:hover {
+  background-color: darkslategray;
+  color: white;
+}
+#dropbtn {
+  display: flex;
+  background-color:darkgoldenrod;
+  color:darkslategray;
+  padding: 11px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
 }
 
 
+#timerDisplay
+{
+  display: flex;
+  position: relative;
+  margin-top: 4vh;
+  margin-left: 15rem;
+}
+
+header{
+  display:flex;
+}

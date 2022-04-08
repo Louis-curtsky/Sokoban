@@ -3,43 +3,57 @@
 // Initailization
 
 var divGameArea = document.createElement("div");
-var contentFromMap = tileMap01.mapGrid;
 var innerArea = document.getElementById("myGame");
 var gameStart = false;
 var gameOver = true;
+var pBeginY = 0;
+var pBehinX = 0;
+var yNowPos = 0;
+var xNowPos = 0;
+var startGX = 0;
+var startGY = 0;
+var endGX = 0;
+var endGY = 0;
 
 const str = "";
-const player = {
-  posY: 11,
-  posX: 11
-}
-
 function msgInfo(str)
 {
   document.getElementById("msgArea").innerHTML = str;
 }
 
-function score()
-{}
+document.getElementById("dropbtn").addEventListener("change", function(){
+var mapSelected = document.getElementById("dropbtn");
+var mapText = mapSelected.options[mapSelected.selectedIndex].value;
+if (mapText == "map1" && gameStart == false)
+{
+  var contentFromMap = tileMap01.mapGrid;  
+}
+else if (mapText == "map2" && gameStart == false)
+{
+  var contentFromMap = tileMap02.mapGrid;  
+} else
+{
+}
+  startGame(contentFromMap);
+});
 
-var gRowS = 0;
-var gRowE = 0;
-var gColS = 0;
-var gColE = 0;
+const player = {
+  posY: 0,
+  posX: 0
+}
 
-startGame();
+
+msgInfo("Arrow key to kick start the timer!!!");
 
 //Appending Div 19x16
-function startGame()
+function startGame(contentFromMap)
 {
-  let beginGR = false;
   if (gameStart == false)
   {
     msgInfo("Start of Game!!!");
+    gameStart == true;
   }
-  else
-  {
-  }
+
   for (let colInside = 0; colInside<16; colInside++)
   {
     for (let rowInside = 0; rowInside<19; rowInside++)
@@ -48,15 +62,35 @@ function startGame()
       innerArea.appendChild(divGameArea);
       divGameArea.id = "Y"+colInside+"X"+rowInside;
       divGameArea.className = contentFromMap[colInside][rowInside][0];
-    }    
-  } 
+      // Find Player position
+      if (divGameArea.className == "P")
+      {
+        pBeginY = colInside;
+        pBehinX = rowInside;
+        yNowPos = pBeginY;
+        xNowPos = pBehinX;
+      }
+      if (divGameArea.className == "G")
+      {
+        if (startGY == 0)
+        {
+          startGY = colInside;
+          if (startGX == 0)
+          {
+            startGX = rowInside;
+          }
+        } 
+        else
+        {
+          endGY = colInside;
+          endGX = rowInside;
+        }
+      }
+    } // End of X For loop
+  } // End of Y For loop
   gameOver = false;
-}
-// document.addEventListener("keydown", ()=>function keyChks() {});
+} // End of startGame Function
 
-
-var yNowPos = 11;
-var xNowPos = 11;
 var yNextPos = 0;
 var xNextPos = 0;
 var IsArrowKey = false;
@@ -64,95 +98,138 @@ var IsArrowKey = false;
 document.getElementById("sokoBanBody").addEventListener("keydown", function(event)
 {
   event.preventDefault();
+  let y = 0;
+  let x = 0;
   switch (event.key){
     case "ArrowLeft":
+      x = -1;
+      break;
     case "ArrowDown":    
+      y = 1;
+      break;
     case "ArrowUp":    
+      y = -1;
+      break;
     case "ArrowRight":
-      IsArrowKey = true;   
+      x = 1;
       break;
     default:
       document.getElementById("msgArea").innerHTML="No Arrow Keys detected!!!";
+      IsArrowKey = false;
       break;
   }
+  IsArrowKey = true;
+  startTimer();
+  startPlaying(y, x);
 })
+      
+  function startTimer()
+  {
+  let hour = 0;
+  let minute = 0;
+  let seconds = 0;
+  let totalSeconds = 0;
+  
+  let intervalId = null;
+  intervalId = setInterval(startTimer, 1000);
+  
+  function startTimer() {
+    ++totalSeconds;
+    hour = Math.floor(totalSeconds /3600);
+    minute = Math.floor((totalSeconds - hour*3600)/60);
+    seconds = totalSeconds - (hour*3600 + minute*60);
+    document.getElementById("hour").innerHTML =hour;
+    document.getElementById("minute").innerHTML =minute;
+    document.getElementById("seconds").innerHTML =seconds;
+  }
+ 
+  
+  document.getElementById('stop-btn').addEventListener('click', () => {
+    if (intervalId)
+      clearInterval(intervalId);
+      gameOver = true;
+  });  
+}
 
 // BEGINNING OF PLAY when user hit arrow keys
 
-document.getElementById("sokoBanBody").addEventListener("keyup", function(event) 
-{
+function startPlaying(y, x) {
   if (IsArrowKey)
   {
     event.preventDefault();
     if (gameStart == false)
     {
       msgInfo(" ");
-      yNextPos = player.posX;
-      xNextPos = player.posY;
+      yNextPos = yNowPos;
+      xNextPos = xNowPos;
       gameStart = true;
       gameOver = false;
-      var IsArrowKey = true;
+      
     }
     else
     {
-      var currentPos = document.getElementById("Y"+player.posY+"X"+player.posX);
-      var IsArrowKey = false;
+      var currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
+      xNowPos=xNextPos;
+      yNowPos=yNextPos;
     }
-  const key = event.key;
+    console.log("Y"+yNowPos+"X"+xNowPos);
+    const key = event.key;
   // Initail Next Position = current position
-    xNowPos=player.posX;
-    yNowPos=player.posY;
     let KDir = "";
-  switch (event.key) 
-  {
-    case "ArrowLeft":
-      KDir = "L";
-      var ChangeBigContain=checkCanMove(yNowPos, (xNowPos-1), "L");
-      break;
+    switch (event.key) 
+    {
+      case "ArrowLeft":
+        KDir = "L";
+        var ChangeBigContain=checkCanMove(yNowPos, (xNowPos-1), "L");
+        break;
       case "ArrowRight":
-      KDir = "R";
-      ChangeBigContain=checkCanMove(yNowPos, (xNowPos+1), "R");
-    break;
-    case "ArrowUp":
-      KDir = "U";
-      ChangeBigContain=checkCanMove((yNowPos-1), xNowPos, "U");
-    break;
-    case "ArrowDown":
-      KDir="D";
-      ChangeBigContain=checkCanMove((yNowPos+1),xNowPos, "D");
-      break;
+        KDir = "R";
+        ChangeBigContain=checkCanMove(yNowPos, (xNowPos+1), "R");
+        break;
+      case "ArrowUp":
+        KDir = "U";
+        ChangeBigContain=checkCanMove((yNowPos-1), xNowPos, "U");
+        break;
+      case "ArrowDown":
+        KDir="D";
+        ChangeBigContain=checkCanMove((yNowPos+1),xNowPos, "D");
+        break;
       default:
-      break;
+        break;
+    } // End of Switch
+    //  console.log(ChangeBigContain.returnNum+ChangeBigContain.cName+" Dir "+KDir);
+    movePlayers(ChangeBigContain, KDir);
   }
-//  console.log(ChangeBigContain.returnNum+ChangeBigContain.cName+" Dir "+KDir);
-  movePlayers(ChangeBigContain, KDir);
-}
-else
-{
-  msgInfo("No Arrow Detected!!!");
-} // End of IsArrowKey
+  else
+  {
+    msgInfo("Non Arrow Keys found!!!");
+
+  } // End of IsArrowKey
 }//END of Funcation
-);
+
 
 function movePlayers(ChangeBigContain, KDir)
 {
   let nextNextY = 0;
   let nextNextX = 0;
+  
+  console.log("MovePlay: Y"+yNowPos+"X"+xNowPos);
   if (ChangeBigContain.returnNum==-1 || ChangeBigContain.returnNum ==1)
   {
     if (KDir == "U" || KDir == "D")
     {
-      player.posY=player.posY+ChangeBigContain.returnNum;
+      yNextPos=yNowPos+ChangeBigContain.returnNum;
     } 
     else // Left or Right
     {
-      player.posX=player.posX+ChangeBigContain.returnNum;
+      xNextPos=xNowPos+ChangeBigContain.returnNum;
     }
     var  currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
-    var nextPos=document.getElementById("Y"+player.posY+"X"+player.posX);
+    var nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
+    // Change to DrawG also
     if (nextPos.className=="G")
     {
-        nextPos.classList="P G";
+        nextPos.className="P G";
     } else
     {
       nextPos.className="P";
@@ -172,71 +249,70 @@ function movePlayers(ChangeBigContain, KDir)
   {
     if (KDir == "D")
     {
-      nextNextY = player.posY+ChangeBigContain.returnNum;
-      player.posY=player.posY+1
-      nextNextX = player.posX;
+      nextNextY = yNowPos+ChangeBigContain.returnNum;
+      yNextPos=yNowPos+1
+      nextNextX = xNowPos;
+
     } 
     else if (KDir == "R")// Right
     {
-      nextNextX = player.posX+ChangeBigContain.returnNum;
-      player.posX=player.posX+1
-      nextNextY = player.posY;
+      nextNextX = xNowPos+ChangeBigContain.returnNum;
+      xNextPos=xNowPos+1
+      nextNextY = yNowPos;
     }
     else if (KDir == "U")
     {
-      nextNextY = player.posY+ChangeBigContain.returnNum;   
-      player.posY=player.posY-1
-      nextNextX = player.posX;   
+      nextNextY = yNowPos+ChangeBigContain.returnNum;   
+      yNextPos=yNowPos-1
+      nextNextX = xNowPos;   
     }
     else if (KDir == "L")// Left with 2 items
     {    
-      nextNextX = player.posX+ChangeBigContain.returnNum;
-      player.posX=player.posX-1;
-      nextNextY = player.posY;
+      nextNextX = xNowPos+ChangeBigContain.returnNum;
+      xNextPos=xNowPos-1;
+      nextNextY = yNowPos;5
     } else
     {
       msgInfo("Error in Logic!!!");
     }
     var currentPos = document.getElementById("Y"+yNowPos+"X"+xNowPos);
-    var nextPos=document.getElementById("Y"+player.posY+"X"+player.posX);
+    var nextPos=document.getElementById("Y"+yNextPos+"X"+xNextPos);
     var nextNextPos=document.getElementById("Y"+nextNextY+"X"+nextNextX);
     //   Move Player
     // PBGG->PBG
-    if (nextNextPos.className=="G" && nextPos.className=="B")
+    if (currentPos.className=="P" && nextPos.className=="B" && nextNextPos.className=="G")
     {
       currentPos.className=" ";
       nextPos.className="P";    
-      nextNextPos.className="B G";      
-      console.log("Loop 1"+nextNextPos.className);
-    } 
-    else if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "R")
+      nextNextPos.className="B";     
+      drawG('B');
+    } //P(BG)GW->PGBGW
+    
+    if  ((currentPos.className=="P" && nextPos.className=="B G"))
     {
+      console.log("Loop 2"+nextPos.className+nextNextPos.className);
       currentPos.className=" ";
-      nextPos.className="P G";
-      nextNextPos.className="B G";
-      console.log("Loop 2"+nextNextPos.className);
-    } else if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "U")
-    {
-      currentPos.className="G";
-      nextPos.className="P G";
-      nextNextPos.className="B G";
-      console.log("Loop 3"+nextNextPos.className);
+      nextPos.className="P";
+      drawG('P');
+      nextNextPos.className="B";
+      drawG('B');
     } else
-    if (nextNextPos.className=="G" && nextPos.className=="B G" && KDir == "D") 
+    if ((currentPos.className=="P G" && nextPos.className=="B G"))
     {
+      console.log("Loop 3"+nextPos.className+nextNextPos.className);
       currentPos.className="G";
-      nextPos.className="P G";
-      nextNextPos.className="B G";
-      console.log("Loop 4"+nextNextPos.className);
-    }
-    else
+      nextPos.className="P";
+      drawG('P');
+      nextNextPos.className="B";
+      drawG('B');  
+    } else
+    if (currentPos.className=="P" && nextPos.className=="B")
     {
       currentPos.className=" ";
       nextPos.className="P";    
       nextNextPos.className="B";
       console.log("Loop 5");
     }
-    
   }
 } // End of MovePlayer
 
@@ -333,3 +409,21 @@ function getMoving(nextDir)
 
 */
 
+// Draw G area
+//
+
+function drawG (cName){
+  for (let i=startGY; i<=endGY; ++i)
+  {
+    for (let j=startGX; j<=endGX; ++j)
+    {
+      var getPosition = document.getElementById("Y"+i+"X"+j)
+//      console.log("Draw"+getPosition.className+" Y"+i+"X"+j);
+      if (getPosition.className==cName)
+      {
+        getPosition.classList=cName+' G';
+        console.log(cName+"cl: "+getPosition.classList+" Y"+i+"X"+j);
+      } 
+    }
+  }
+} // ENd of DrawG
